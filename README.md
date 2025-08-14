@@ -6,7 +6,9 @@ Chess implementation in C++, done entirely with bitboard representation.
 
 ✔️ Board class
 
-✔️ Input handler (Nifty regex parse. TODO later: Switch regex library, as std::regex is slow.)
+✔️ Input handler
+
+❌ FTXUI
 
 ### Features implemented:
 ✔️ Checks
@@ -17,7 +19,7 @@ Chess implementation in C++, done entirely with bitboard representation.
 
 ❌ En Passant
 
-❌ Castling
+✔️ Castling
 
 ❌ Stalemate detection
 
@@ -27,4 +29,6 @@ Chess implementation in C++, done entirely with bitboard representation.
 
 ❌ Insufficient material detection
 
-❌❌❌ Magic bitboards (uh, strong maybe on that one)
+❌ Switch regex library (std::regex is slow)
+
+❌❌❌ Magic bitboards

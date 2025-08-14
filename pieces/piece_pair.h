@@ -41,8 +41,7 @@ class PiecePair
 
     void applyMove(int from, int to)
     {
-        bitboard_ &= ~(1ULL << from);
-        bitboard_ |= (1ULL << to);
+        bitboard_ ^= ((1ULL << from) | (1ULL << to));
     }
 
   protected:

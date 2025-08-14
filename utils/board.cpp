@@ -32,6 +32,7 @@ void Board::updateBoardAggregates()
                 | blackQueen.getBitboard() | blackKing.getBitboard();
 }
 
+// TODO: Refactor
 bool Board::checkMoveLegality(Board::Color color, int from, int to)
 {
   uint64_t moveMask = 0;
@@ -92,35 +93,41 @@ bool Board::checkMoveLegality(Board::Color color, int from, int to)
 
 void Board::moveCommand(char symbol, int from, int to, Color color)
 {
+  if(from == 0) {whiteCastledQ = true;}
+  if(from == 7) {whiteCastledK = true;}
+  if(from == 4) {whiteCastledK = true; whiteCastledQ = true;}
+  if(from == 60) {blackCastledK = true; blackCastledQ = true;}
+  if(from == 63) {blackCastledK = true;}
+  if(from == 56) {blackCastledQ = true;}
   switch (symbol)
   {
     case 'P':
-      if (color == WHITE) {whitePawns.clearSquare(from); whitePawns.flipBit(to);} else {blackPawns.clearSquare(from); blackPawns.flipBit(to);}
+      if (color == WHITE) {whitePawns.applyMove(from, to);} else {blackPawns.applyMove(from, to);}
       break;
     case 'R':
-      if (color == WHITE) {whiteRooks.clearSquare(from); whiteRooks.flipBit(to);} else {blackRooks.clearSquare(from); blackRooks.flipBit(to);}
+      if (color == WHITE) {whiteRooks.applyMove(from, to);} else {blackRooks.applyMove(from, to);}
       break;
     case 'N':
-      if (color == WHITE) {whiteKnights.clearSquare(from); whiteKnights.flipBit(to);} else {blackKnights.clearSquare(from); blackKnights.flipBit(to);}
+      if (color == WHITE) {whiteKnights.applyMove(from, to);} else {blackKnights.applyMove(from, to);}
       break;
     case 'B':
-      if (color == WHITE) {whiteBishops.clearSquare(from); whiteBishops.flipBit(to);} else {blackBishops.clearSquare(from); blackBishops.flipBit(to);}
+      if (color == WHITE) {whiteBishops.applyMove(from, to);} else {blackBishops.applyMove(from, to);}
       break;
     case 'Q':
-      if (color == WHITE) {whiteQueen.clearSquare(from); whiteQueen.flipBit(to);} else {blackQueen.clearSquare(from); blackQueen.flipBit(to);}
+      if (color == WHITE) {whiteQueen.applyMove(from, to);} else {blackQueen.applyMove(from, to);}
       break;
     case 'K':
       if (color == WHITE)
       {
-        whiteKing.clearSquare(from); whiteKing.flipBit(to);
-        whiteCastledK = true;
-        whiteCastledQ = true;
+        whiteKing.applyMove(from, to);
+        //whiteCastledK = true;
+        //whiteCastledQ = true;
       } 
       else 
       {
-        blackKing.clearSquare(from); blackKing.flipBit(to);
-        blackCastledK = true;
-        blackCastledQ = true;
+        blackKing.applyMove(from, to);
+        //blackCastledK = true;
+        //blackCastledQ = true;
       }
       break;
   }
@@ -145,17 +152,42 @@ void Board::moveCommand(char symbol, int from, int to, Color color)
   updateBoardAggregates();
 }
 
+
 void Board::castleCommand(std::string command, Color color)
 {
-  auto& targetKing = (color == WHITE) ? whiteKing : blackKing;
   switch (command.length())
   {
-    case '5':
-
+    // TODO: Write separate threatened function for castling, as this is a bit inefficient.
+    case (5):
+      if (color == WHITE && !whiteCastledQ && !isSquareThreatened(4) && !isSquareThreatened(3) && !isSquareThreatened(2) &&
+          (whitePieces & ((1ULL << 1) | (1ULL << 2) | (1ULL << 3)) == 0))
+      {
+        whiteKing.applyMove(4, 2);
+        whiteRooks.applyMove(0, 3);
+      }
+      else if (color == BLACK && !blackCastledQ && !isSquareThreatened(60) && !isSquareThreatened(59) && !isSquareThreatened(58) &&
+          (blackPieces & ((1ULL << 57) | (1ULL << 58) | (1ULL << 59)) == 0))
+      {
+        blackKing.applyMove(60, 58);
+        blackRooks.applyMove(56, 59);
+      }
       break;
-    case '3':
+    case (3):
+      if (color == WHITE && !whiteCastledK && !isSquareThreatened(4) && !isSquareThreatened(5) && !isSquareThreatened(6) &&
+          (whitePieces & ((1ULL << 5) | (1ULL << 6)) == 0))
+      {
+        whiteKing.applyMove(4, 6);
+        whiteRooks.applyMove(7, 5);
+      }
+      else if (color == BLACK && !blackCastledK && !isSquareThreatened(60) && !isSquareThreatened(61) && !isSquareThreatened(62) &&
+          (whitePieces & ((1ULL << 62) | (1ULL << 63)) == 0))
+      {
+        blackKing.applyMove(60, 62);
+        blackRooks.applyMove(63, 61);
+      }
       break;
   }
+  updateBoardAggregates();
 }
 
 void Board::promotion(int to, char symbol)
@@ -302,4 +334,40 @@ int Board::findKing(Board::Color color)
 void Board::switchMover()
 {
   toMove = (toMove == WHITE) ? BLACK : WHITE;
+}
+
+bool Board::isSquareThreatened(int square)
+{
+  std::vector<std::vector<std::pair<int,int>>> allMoves;
+  if (toMove == WHITE)
+  {
+  allMoves = {
+      blackPawns.pseudoLegalMoves(blackPieces, whitePieces),
+      blackKnights.pseudoLegalMoves(blackPieces, whitePieces),
+      blackBishops.pseudoLegalMoves(blackPieces, whitePieces),
+      blackRooks.pseudoLegalMoves(blackPieces, whitePieces),
+      blackQueen.pseudoLegalMoves(blackPieces, whitePieces),
+      blackKing.pseudoLegalMoves(blackPieces, whitePieces)
+  };
+  }
+  else
+  {
+  allMoves = {
+      whitePawns.pseudoLegalMoves(whitePieces, blackPieces),
+      whiteKnights.pseudoLegalMoves(whitePieces, blackPieces),
+      whiteBishops.pseudoLegalMoves(whitePieces, blackPieces),
+      whiteRooks.pseudoLegalMoves(whitePieces, blackPieces),
+      whiteQueen.pseudoLegalMoves(whitePieces, blackPieces),
+      whiteKing.pseudoLegalMoves(whitePieces, blackPieces)
+  };
+  }
+  for (const auto& moveSet : allMoves)
+  {
+    for (const auto& [fromSq, toSq] : moveSet)
+    {
+      if (toSq == square)
+        return true;
+    }
+  }
+  return false;
 }

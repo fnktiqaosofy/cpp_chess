@@ -51,39 +51,42 @@ void Client::processMoveCommand(std::smatch& move)
   {
     gameBoard.castleCommand(castle, gameBoard.toMove);
   }
-  std::string symbol_ext = move[1].str();
-  char symbol = (symbol_ext.empty()) ? 'P' : symbol_ext[0];
-  std::string specifier = move[2].str();
-  std::string capture_mod = move[3].str();
-  int to = BoardUtils::coordToIndex(move[4].str());
-  std::string promo = move[5].str();
-
-  if ((symbol == 'P') && (((to / 8) == 7) || ((to / 8) == 0)) && (promo.empty()))
-  {
-    std::cout << "Pawn will promote. Please indicate desired piece." << '\n';
-    return;
-  }
-
-  int from = gameBoard.identifyMover(gameBoard.toMove, symbol, to);
-  if (from == -1) {
-    std::cout << "Illegal or ambiguous move." << '\n';
-    return;
-  }
-
-  if (gameBoard.checkMoveLegality(gameBoard.toMove, from, to))
-  {
-    gameBoard.moveCommand(symbol, from, to, gameBoard.toMove);
-    if ((symbol == 'P') && (((to / 8) == 7) || ((to / 8) == 0)))
-    {
-      gameBoard.promotion(to, promo[0]);
-    }
-    gameBoard.switchMover();
-    return;
-  }
   else
   {
-    std::cout << "Move is not allowed as it leaves king in check." << '\n';
-    return;
+    std::string symbol_ext = move[1].str();
+    char symbol = (symbol_ext.empty()) ? 'P' : symbol_ext[0];
+    std::string specifier = move[2].str();
+    std::string capture_mod = move[3].str();
+    int to = BoardUtils::coordToIndex(move[4].str());
+    std::string promo = move[5].str();
+
+    if ((symbol == 'P') && (((to / 8) == 7) || ((to / 8) == 0)) && (promo.empty()))
+    {
+      std::cout << "Pawn will promote. Please indicate desired piece." << '\n';
+      return;
+    }
+
+    int from = gameBoard.identifyMover(gameBoard.toMove, symbol, to);
+    if (from == -1) {
+      std::cout << "Illegal or ambiguous move." << '\n';
+      return;
+    }
+
+    if (gameBoard.checkMoveLegality(gameBoard.toMove, from, to))
+    {
+      gameBoard.moveCommand(symbol, from, to, gameBoard.toMove);
+      if ((symbol == 'P') && (((to / 8) == 7) || ((to / 8) == 0)))
+      {
+        gameBoard.promotion(to, promo[0]);
+      }
+      gameBoard.switchMover();
+      return;
+    }
+    else
+    {
+      std::cout << "Move is not allowed as it leaves king in check." << '\n';
+      return;
+    }
   }
 }
 

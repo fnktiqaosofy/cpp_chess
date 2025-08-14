@@ -107,6 +107,13 @@ class Board
      * Instruct board to switch currently active player.
      */
     void switchMover();
+
+    /**
+     * Check if square is threatened by opposing color.
+     * @param color Color of current player
+     * @returns Boolean signifying whether opposing player threatens square.
+     */
+    bool isSquareThreatened(int square);
     
 };
 
