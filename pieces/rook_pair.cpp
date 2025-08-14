@@ -36,7 +36,7 @@ std::vector<std::pair<int,int>> RookPair::pseudoLegalMoves(uint64_t ownPieces, u
       int curr_file = from_file + df;
       while(curr_rank >= 0 && curr_rank < 8 && curr_file >= 0 && curr_file < 8)
       {
-        int to = curr_rank * 8 + curr_rank;
+        int to = curr_rank * 8 + curr_file;
 
         if ((ownPieces >> to) & 1ULL) break;
 

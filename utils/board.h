@@ -55,7 +55,7 @@ class Board
     /**
      * Castles.
      */
-    void castleCommand(std::string command, Color color);
+    int castleCommand(std::string command, Color color);
 
     /**
      * Handles promotions.
@@ -114,6 +114,8 @@ class Board
      * @returns Boolean signifying whether opposing player threatens square.
      */
     bool isSquareThreatened(int square);
+
+    bool checkMate();
     
 };
 

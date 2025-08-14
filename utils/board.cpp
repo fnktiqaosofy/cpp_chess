@@ -1,4 +1,5 @@
 #include "board.h"
+#include <iostream>
 
 Board::Board()
   : whitePawns(PiecePair::WHITE),
@@ -12,14 +13,16 @@ Board::Board()
     whiteQueen(PiecePair::WHITE),
     blackQueen(PiecePair::BLACK),
     whiteKing(PiecePair::WHITE),
-    blackKing(PiecePair::BLACK)
+    blackKing(PiecePair::BLACK),
+    whiteCastledK(false),
+    whiteCastledQ(false),
+    blackCastledK(false),
+    blackCastledQ(false),
+    toMove(Board::WHITE)
+    //whitePieces(0x000000000000FFFF),
+    //blackPieces(0xFFFF000000000000)
 {
   updateBoardAggregates();
-  toMove = Board::WHITE;
-  whiteCastledK = false;
-  whiteCastledQ = false;
-  blackCastledK = false;
-  blackCastledQ = false;
 }
 
 void Board::updateBoardAggregates()
@@ -35,7 +38,7 @@ void Board::updateBoardAggregates()
 // TODO: Refactor
 bool Board::checkMoveLegality(Board::Color color, int from, int to)
 {
-  uint64_t moveMask = 0;
+  uint64_t moveMask;
   moveMask = (1ULL << to) | (1ULL << from);
   uint64_t tempBoard = (color == WHITE) ? whitePieces : blackPieces;
   uint64_t newBoardState = tempBoard ^ moveMask;
@@ -53,10 +56,16 @@ bool Board::checkMoveLegality(Board::Color color, int from, int to)
 
   auto defendingKing = (color == WHITE) ? whiteKing : blackKing;
 
-  if (defendingKing.getBitboard() >> from)
+  int kingPosition;
+  if ((defendingKing.getBitboard() >> from) & 1ULL)
   {
     defendingKing.clearSquare(from);
     defendingKing.flipBit(to);
+    kingPosition = to;
+  }
+  else
+  {
+    kingPosition = findKing(color);
   }
 
   if ((attackingPieces >> to) & 1)
@@ -79,7 +88,6 @@ bool Board::checkMoveLegality(Board::Color color, int from, int to)
       attackingKing.pseudoLegalMoves(attackingPieces, defendingPieces)
   };
 
-  int kingPosition = findKing(color);
   for (const auto& moveSet : allMoves)
   {
     for (const auto& [fromSq, toSq] : moveSet)
@@ -131,6 +139,7 @@ void Board::moveCommand(char symbol, int from, int to, Color color)
       }
       break;
   }
+  
   uint64_t attackedPieces = (color == WHITE) ? blackPieces : whitePieces;
   if ((attackedPieces >> to) & 1)
   {
@@ -153,7 +162,7 @@ void Board::moveCommand(char symbol, int from, int to, Color color)
 }
 
 
-void Board::castleCommand(std::string command, Color color)
+int Board::castleCommand(std::string command, Color color)
 {
   switch (command.length())
   {
@@ -164,30 +173,38 @@ void Board::castleCommand(std::string command, Color color)
       {
         whiteKing.applyMove(4, 2);
         whiteRooks.applyMove(0, 3);
+        whitePieces ^= ((1ULL << 0) | (1ULL << 2) | (1ULL << 3) | (1ULL << 4));
+        return 0;
       }
       else if (color == BLACK && !blackCastledQ && !isSquareThreatened(60) && !isSquareThreatened(59) && !isSquareThreatened(58) &&
           (blackPieces & ((1ULL << 57) | (1ULL << 58) | (1ULL << 59)) == 0))
       {
         blackKing.applyMove(60, 58);
         blackRooks.applyMove(56, 59);
+        blackPieces ^= ((1ULL << 56) | (1ULL << 58) | (1ULL << 59) | (1ULL << 60));
+        return 0;
       }
       break;
     case (3):
       if (color == WHITE && !whiteCastledK && !isSquareThreatened(4) && !isSquareThreatened(5) && !isSquareThreatened(6) &&
-          (whitePieces & ((1ULL << 5) | (1ULL << 6)) == 0))
+          ((whitePieces & ((1ULL << 5) | (1ULL << 6))) == 0))
       {
         whiteKing.applyMove(4, 6);
         whiteRooks.applyMove(7, 5);
+        whitePieces ^= ((1ULL << 4) | (1ULL << 5) | (1ULL << 6) | (1ULL << 7));
+        return 0;
       }
       else if (color == BLACK && !blackCastledK && !isSquareThreatened(60) && !isSquareThreatened(61) && !isSquareThreatened(62) &&
           (whitePieces & ((1ULL << 62) | (1ULL << 63)) == 0))
       {
         blackKing.applyMove(60, 62);
         blackRooks.applyMove(63, 61);
+        blackPieces ^= ((1ULL << 60) | (1ULL << 61) | (1ULL << 62) | (1ULL << 63));
+        return 0;
       }
       break;
   }
-  updateBoardAggregates();
+  return -1;
 }
 
 void Board::promotion(int to, char symbol)
@@ -261,7 +278,6 @@ int Board::identifyMover(Color color, char piece, int to)
               return -1; // multiple matches
       }
   }
-
   return (matchCount == 1) ? ind : -1;
 }
 
@@ -370,4 +386,15 @@ bool Board::isSquareThreatened(int square)
     }
   }
   return false;
+}
+
+bool Board::checkMate()
+{
+  auto allmoves = getAllPseudoLegalMoves(Board::toMove);
+  int legalMoves = 0;
+  for (const auto& [fromSq, toSq] : allmoves)
+  {
+      if (checkMoveLegality(toMove, fromSq, toSq)) {++legalMoves;}
+  }
+  return (legalMoves == 0) ? true : false;
 }

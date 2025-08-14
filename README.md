@@ -13,7 +13,7 @@ Chess implementation in C++, done entirely with bitboard representation.
 ### Features implemented:
 ✔️ Checks
 
-❌ Checkmates
+✔️ Checkmates
 
 ✔️ Promotions
 

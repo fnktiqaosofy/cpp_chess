@@ -10,6 +10,11 @@ void Client::runProgram()
     std::cout << '\n';
     printBoard();
     std::cout << '\n';
+    if (gameBoard.checkMate())
+    {
+      std::string winner = (gameBoard.toMove == 0) ? "Black" : "White";
+      std::cout << "Checkmate! " << winner << " has won." << '\n';
+    }
     std::smatch match;
     std::string move;
     std::smatch parsed_move = getMove(match, move);
@@ -49,7 +54,14 @@ void Client::processMoveCommand(std::smatch& move)
   std::string castle = move[7].str();
   if (!castle.empty())
   {
-    gameBoard.castleCommand(castle, gameBoard.toMove);
+    int check;
+    check = gameBoard.castleCommand(castle, gameBoard.toMove);
+    if (check == -1)
+    {
+      std::cout << "Cannot castle." << '\n';
+      return;
+    }
+    gameBoard.switchMover();
   }
   else
   {
@@ -65,7 +77,7 @@ void Client::processMoveCommand(std::smatch& move)
       std::cout << "Pawn will promote. Please indicate desired piece." << '\n';
       return;
     }
-
+    
     int from = gameBoard.identifyMover(gameBoard.toMove, symbol, to);
     if (from == -1) {
       std::cout << "Illegal or ambiguous move." << '\n';
