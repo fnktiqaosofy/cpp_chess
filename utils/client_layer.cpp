@@ -14,6 +14,11 @@ void Client::runProgram()
     {
       std::string winner = (gameBoard.toMove == 0) ? "Black" : "White";
       std::cout << "Checkmate! " << winner << " has won." << '\n';
+      break;
+    }
+    if (gameBoard.insufficientMaterial())
+    {
+      std::cout << "Game is drawn due to insufficient material." << '\n';
     }
     std::smatch match;
     std::string move;
@@ -40,13 +45,15 @@ std::smatch Client::getMove(std::smatch& match, std::string& move)
 
 void Client::printBoard()
 {
-  int g = 0;
-  for (int i = 0; i < 64; i++)
-  {
-    std::cout << gameBoard.identifyPiece(i);
-    ++g;
-    if ((g % 8) == 0) {std::cout << '\n';}
-  }
+    for (int rank = 7; rank >= 0; --rank) 
+    {
+        for (int file = 0; file < 8; ++file)
+        {
+            int idx = rank * 8 + file;
+            std::cout << gameBoard.identifyPiece(idx);
+        }
+        std::cout << '\n';
+    }
 }
  // char symbol, int to, 
 void Client::processMoveCommand(std::smatch& move)

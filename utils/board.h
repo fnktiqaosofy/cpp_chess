@@ -115,7 +115,17 @@ class Board
      */
     bool isSquareThreatened(int square);
 
+    /**
+     * Checks if board is in a checkmate state.
+     * @returns Bool signifying whether no legal moves can be made that bring the king out of check.
+     */
     bool checkMate();
+
+    /**
+     * Checks if material is insufficient for game not to end in a draw.
+     * @returns Bool signifying whether material is insufficient.
+     */
+    bool insufficientMaterial();
     
 };
 

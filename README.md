@@ -27,7 +27,7 @@ Chess implementation in C++, done entirely with bitboard representation.
 
 ❌ Fifty-move rule
 
-❌ Insufficient material detection
+✔️ Insufficient material detection
 
 ❌ Switch regex library (std::regex is slow)
 

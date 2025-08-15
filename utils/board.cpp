@@ -398,3 +398,20 @@ bool Board::checkMate()
   }
   return (legalMoves == 0) ? true : false;
 }
+
+bool Board::insufficientMaterial()
+{
+  std::array<uint64_t, 10> boards = {
+    whiteQueen.getBitboard(),
+    whiteBishops.getBitboard(),
+    whiteKnights.getBitboard(),
+    whiteRooks.getBitboard(),
+    whitePawns.getBitboard(),
+    blackQueen.getBitboard(),
+    blackBishops.getBitboard(),
+    blackKnights.getBitboard(),
+    blackRooks.getBitboard(),
+    blackPawns.getBitboard()};
+  std::string materialString = BoardUtils::buildRemainingMaterial(boards);
+  return std::find(BoardUtils::drawnPieceSetups.begin(), BoardUtils::drawnPieceSetups.end(), materialString) != BoardUtils::drawnPieceSetups.end();
+}
