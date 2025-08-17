@@ -1,7 +1,9 @@
 #include "pawn.h"
+#include "../utils/board.h"
+
 
 // Initialize bitboard_ based on color.
-Pawn::Pawn(Color color) : PiecePair(color, PAWN)
+Pawn::Pawn(Color color, Board& b) : PiecePair(color, PAWN), board(b)
 {
   if (color == WHITE)
   {
@@ -38,6 +40,7 @@ std::vector<std::pair<int,int>> Pawn::pseudoLegalMoves(uint64_t ownPieces, uint6
     attackDirection = {{{-1,1}, {-1,-1}}};
   }
 
+  uint8_t enPassant = board.getEnpassant();
   std::vector<std::pair<int,int>> moves;
   std::vector<int> pawnIndices = findPieces(bitboard_);
 
@@ -52,11 +55,24 @@ std::vector<std::pair<int,int>> Pawn::pseudoLegalMoves(uint64_t ownPieces, uint6
       int currFile = fromFile + df;
       if (currRank >= 0 && currRank < 8 && currFile >= 0 && currFile < 8)
       {
+
         int to = currRank * 8 + currFile;
-        if ((opponentPieces >> to) & 1ULL)
+        bool normalCapture = (opponentPieces >> to) & 1ULL;
+        bool epCapture = false;
+
+        // ugly ugly ugly ugly ugly
+        if (fromRank == (color == WHITE ? 4 : 3))
         {
-          moves.emplace_back(from, to);
+          if (currFile == fromFile + 1 && fromFile < 7)
+          {
+            epCapture = (enPassant >> (currFile)) & 1;
+          }
+          else if (currFile == fromFile - 1 && fromFile > 0)
+          {
+            epCapture = (enPassant >> (currFile)) & 1;
+          }
         }
+        if (normalCapture || epCapture) {moves.emplace_back(from, to);}
       }
     }
 

@@ -3,8 +3,6 @@ Chess implementation in C++, with bitboard representation.
 
 ### Todo:
 
-❌ En Passant
-
 ❌ Stalemate detection
 
 ❌ Draw by repetition

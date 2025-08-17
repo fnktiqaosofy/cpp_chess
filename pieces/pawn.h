@@ -2,13 +2,16 @@
 #define PAWN_H
 
 #include "piece_pair.h"
+class Board;
 
 
 class Pawn : public PiecePair
 {
+  Board& board;
+
   public:
       // Constructor
-      Pawn(Color color);
+      Pawn(Color color, Board& b);
 
       char getSymbol() const override;
 

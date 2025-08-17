@@ -1,8 +1,8 @@
 #include "board.h"
 
 Board::Board()
-  : whitePawns(PiecePair::WHITE),
-    blackPawns(PiecePair::BLACK),
+  : whitePawns(PiecePair::WHITE, *this), // TODO: Look at alternatives to passing board.
+    blackPawns(PiecePair::BLACK, *this),
     whiteKnights(PiecePair::WHITE),
     blackKnights(PiecePair::BLACK),
     whiteBishops(PiecePair::WHITE),
@@ -117,14 +117,37 @@ void Board::moveCommand(char symbol, int from, int to, Turn color)
   if(from == 60) {blackCastledK = true; blackCastledQ = true;}
   if(from == 63) {blackCastledK = true;}
   if(from == 56) {blackCastledQ = true;}
+  enPassant[!(int)color] = 0;
 
   PiecePair::PieceType piece = BoardUtils::charToPieceType(symbol);
   PiecePair::Color colorP = (toMove == Turn::WHITE) ? PiecePair::WHITE : PiecePair::BLACK;
   
   pieceTable[colorP][piece]->applyMove(from, to);
+  if(piece == PiecePair::PAWN && (std::abs(to - from) == 16))
+  {
+    enPassant[(int)color] = (uint8_t(1) << (from % 8));
+  }
 
   
   uint64_t& attackedPieces = (color == Turn::WHITE) ? blackPieces : whitePieces;
+  if (piece == PiecePair::PAWN)
+  {
+      int fromRank = from / 8;
+      int fromFile = from % 8;
+      int toRank   = to / 8;
+      int toFile   = to % 8;
+
+      uint64_t& attackedPieces = (color == Turn::WHITE) ? blackPieces : whitePieces;
+      if (fromFile != toFile && !((attackedPieces >> to) & 1ULL))
+      {
+          int capturedRank = (color == Turn::WHITE) ? toRank - 1 : toRank + 1;
+          int capturedIndex = capturedRank * 8 + toFile;
+
+          const auto capturedPiece = identifyEnemyPiece(capturedIndex, color);
+          capturedPiece->clearSquare(capturedIndex);
+          attackedPieces &= ~(1ULL << capturedIndex);
+      }
+  }
   if ((attackedPieces >> to) & 1)
   {
     const auto attackedPiece = identifyEnemyPiece(to, color);
@@ -265,6 +288,8 @@ int Board::identifyMover(Turn color, char symbol, int to, std::string specifier)
 char Board::identifyPiece(int index)
 {
   uint64_t mask = 1ULL << index;
+
+  // The std::tolower could just be baked into the piece classes. Fix later i'm tired.
 
   if (whitePawns.getBitboard() & mask)   return whitePawns.getSymbol();
   if (blackPawns.getBitboard() & mask)   return std::tolower(blackPawns.getSymbol());
@@ -465,4 +490,9 @@ bool Board::insufficientMaterial()
 Board::Turn Board::getToMove()
 {
   return toMove;
+}
+
+uint8_t Board::getEnpassant()
+{
+  return enPassant[!(int)getToMove()];
 }

@@ -126,6 +126,8 @@ class Board
      */
     Turn getToMove();
 
+    uint8_t getEnpassant();
+
   private:
   
     Pawn whitePawns;
@@ -152,7 +154,8 @@ class Board
     bool blackCastledQ;
 
     PiecePair* pieceTable[2][6];
-    
+
+    std::array<uint8_t, 2> enPassant{};
 };
 
 #endif
