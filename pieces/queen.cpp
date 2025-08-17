@@ -27,16 +27,16 @@ std::vector<std::pair<int,int>> Queen::pseudoLegalMoves(uint64_t ownPieces, uint
 
   for (int from : queenIndices)
   {
-    int from_rank = from / 8;
-    int from_file = from % 8;
+    int fromRank = from / 8;
+    int fromFile = from % 8;
 
     for (auto [dr, df] : directions)
     {
-      int curr_rank = from_rank + dr;
-      int curr_file = from_file + df;
-      while(curr_rank >= 0 && curr_rank < 8 && curr_file >= 0 && curr_file < 8)
+      int currRank = fromRank + dr;
+      int currFile = fromFile + df;
+      while(currRank >= 0 && currRank < 8 && currFile >= 0 && currFile < 8)
       {
-        int to = curr_rank * 8 + curr_file;
+        int to = currRank * 8 + currFile;
 
         if ((ownPieces >> to) & 1ULL) break;
 
@@ -44,8 +44,8 @@ std::vector<std::pair<int,int>> Queen::pseudoLegalMoves(uint64_t ownPieces, uint
 
         if ((opponentPieces >> to) & 1ULL) break;
 
-        curr_rank += dr;
-        curr_file += df;
+        currRank += dr;
+        currFile += df;
       }
     }
   }

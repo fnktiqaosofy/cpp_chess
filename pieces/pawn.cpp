@@ -67,7 +67,7 @@ std::vector<std::pair<int,int>> Pawn::pseudoLegalMoves(uint64_t ownPieces, uint6
 
     to = from + (direction*16);
     if (((from / 8) == startRank) && !(((ownPieces | opponentPieces) >> to) & 1ULL) &&
-      !(((ownPieces | opponentPieces) >> (from + 8)) & 1ULL))
+      !(((ownPieces | opponentPieces) >> (from + 8*direction)) & 1ULL))
     {
       moves.emplace_back(from, to);
     }

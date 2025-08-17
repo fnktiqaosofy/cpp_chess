@@ -124,22 +124,12 @@ void Board::moveCommand(char symbol, int from, int to, Turn color)
   pieceTable[colorP][piece]->applyMove(from, to);
 
   
-  uint64_t attackedPieces = (color == Turn::WHITE) ? blackPieces : whitePieces;
+  uint64_t& attackedPieces = (color == Turn::WHITE) ? blackPieces : whitePieces;
   if ((attackedPieces >> to) & 1)
   {
-    auto& attackingPawns = (color == Turn::WHITE) ? blackPawns : whitePawns;
-    auto& attackingKnights = (color == Turn::WHITE) ? blackKnights : whiteKnights;
-    auto& attackingBishops = (color == Turn::WHITE) ? blackBishops : whiteBishops;
-    auto& attackingRooks = (color == Turn::WHITE) ? blackRooks : whiteRooks;
-    auto& attackingQueen = (color == Turn::WHITE) ? blackQueen : whiteQueen;
-    auto& attackingKing = (color == Turn::WHITE) ? blackKing : whiteKing;
+    const auto attackedPiece = identifyEnemyPiece(to, color);
+    attackedPiece->clearSquare(to);
     attackedPieces &= ~(1ULL << to);
-    attackingPawns.clearSquare(to);
-    attackingKnights.clearSquare(to);
-    attackingBishops.clearSquare(to);
-    attackingRooks.clearSquare(to);
-    attackingQueen.clearSquare(to);
-    attackingKing.clearSquare(to);
   }
 
   updateBoardAggregates();
@@ -277,19 +267,44 @@ char Board::identifyPiece(int index)
   uint64_t mask = 1ULL << index;
 
   if (whitePawns.getBitboard() & mask)   return whitePawns.getSymbol();
-  if (blackPawns.getBitboard() & mask)   return blackPawns.getSymbol();
+  if (blackPawns.getBitboard() & mask)   return std::tolower(blackPawns.getSymbol());
   if (whiteKnights.getBitboard() & mask) return whiteKnights.getSymbol();
-  if (blackKnights.getBitboard() & mask) return blackKnights.getSymbol();
+  if (blackKnights.getBitboard() & mask) return std::tolower(blackKnights.getSymbol());
   if (whiteBishops.getBitboard() & mask) return whiteBishops.getSymbol();
-  if (blackBishops.getBitboard() & mask) return blackBishops.getSymbol();
+  if (blackBishops.getBitboard() & mask) return std::tolower(blackBishops.getSymbol());
   if (whiteRooks.getBitboard() & mask)   return whiteRooks.getSymbol();
-  if (blackRooks.getBitboard() & mask)   return blackRooks.getSymbol();
+  if (blackRooks.getBitboard() & mask)   return std::tolower(blackRooks.getSymbol());
   if (whiteQueen.getBitboard() & mask)   return whiteQueen.getSymbol();
-  if (blackQueen.getBitboard() & mask)   return blackQueen.getSymbol();
+  if (blackQueen.getBitboard() & mask)   return std::tolower(blackQueen.getSymbol());
   if (whiteKing.getBitboard() & mask)    return whiteKing.getSymbol();
-  if (blackKing.getBitboard() & mask)    return blackKing.getSymbol();
+  if (blackKing.getBitboard() & mask)    return std::tolower(blackKing.getSymbol());
 
-  return ' ';
+  return '.';
+}
+
+PiecePair* Board::identifyEnemyPiece(int index, Board::Turn color)
+{
+  uint64_t mask = 1ULL << index;
+
+  if (color == Turn::WHITE)
+  {
+    if (blackPawns.getBitboard() & mask)   return pieceTable[PiecePair::BLACK][PiecePair::PAWN];
+    if (blackKnights.getBitboard() & mask) return pieceTable[PiecePair::BLACK][PiecePair::KNIGHT];
+    if (blackBishops.getBitboard() & mask) return pieceTable[PiecePair::BLACK][PiecePair::BISHOP];
+    if (blackRooks.getBitboard() & mask)   return pieceTable[PiecePair::BLACK][PiecePair::ROOK];
+    if (blackQueen.getBitboard() & mask)   return pieceTable[PiecePair::BLACK][PiecePair::QUEEN];
+    if (blackKing.getBitboard() & mask)    return pieceTable[PiecePair::BLACK][PiecePair::KING];
+  }
+  else
+  {
+    if (whitePawns.getBitboard() & mask)   return pieceTable[PiecePair::WHITE][PiecePair::PAWN];
+    if (whiteKnights.getBitboard() & mask) return pieceTable[PiecePair::WHITE][PiecePair::KNIGHT];
+    if (whiteBishops.getBitboard() & mask) return pieceTable[PiecePair::WHITE][PiecePair::BISHOP];
+    if (whiteRooks.getBitboard() & mask)   return pieceTable[PiecePair::WHITE][PiecePair::ROOK];
+    if (whiteQueen.getBitboard() & mask)   return pieceTable[PiecePair::WHITE][PiecePair::QUEEN];
+    if (whiteKing.getBitboard() & mask)    return pieceTable[PiecePair::WHITE][PiecePair::KING];
+  }
+  return nullptr;
 }
 
 std::vector<std::pair<int,int>> Board::getAllPseudoLegalMoves(Turn color)

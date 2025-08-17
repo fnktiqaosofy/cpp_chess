@@ -25,14 +25,14 @@ std::vector<std::pair<int,int>> KnightPair::pseudoLegalMoves(uint64_t ownPieces,
   std::vector<int> knightIndices = findPieces(bitboard_);
   for (int from : knightIndices)
   {
-    for (int delta : move_deltas)
+    for (int delta : moveDeltas)
     {
       int to = from + delta;
       if (to < 0 || to >= 64) continue;
 
-      int from_file = from % 8;
-      int to_file = to % 8;
-      if (std::abs(to_file - from_file) > 2) continue;
+      int fromFile = from % 8;
+      int toFile = to % 8;
+      if (std::abs(toFile - fromFile) > 2) continue;
       if ((ownPieces >> to ) & 1ULL) continue;
 
       moves.emplace_back(from, to);

@@ -7,7 +7,6 @@
 #include <vector>
 #include <array>
 #include <algorithm>
-#include <map>
 #include "../pieces/piece_pair.h"
 
 namespace BoardUtils 

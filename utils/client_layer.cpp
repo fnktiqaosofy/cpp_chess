@@ -50,7 +50,7 @@ void Client::printBoard()
         for (int file = 0; file < 8; ++file)
         {
             int idx = rank * 8 + file;
-            std::cout << gameBoard.identifyPiece(idx);
+            std::cout << gameBoard.identifyPiece(idx) << ' ';
         }
         std::cout << '\n';
     }

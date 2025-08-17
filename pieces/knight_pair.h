@@ -17,7 +17,7 @@ public:
     std::vector<std::pair<int, int>> pseudoLegalMoves(uint64_t ownPieces, uint64_t opponentPieces) const;
 
 private:
-    static constexpr std::array<int, 8> move_deltas = {6, 10, 15, 17, -6, -10, -15, -17};
+    static constexpr std::array<int, 8> moveDeltas = {6, 10, 15, 17, -6, -10, -15, -17};
 };
 
 

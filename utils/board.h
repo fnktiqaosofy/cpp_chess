@@ -59,11 +59,18 @@ class Board
     int findKing(Turn color);
 
     /**
-     * Identifies piece located on index.
+     * Mostly obsolete, but used in printing board to console. Identifies piece located on index. 
      * @param index Index of piece.
      * @returns Char corresponding to piece's identifier in algebraic chess notation.
      */
     char identifyPiece(int index);
+    
+    /**
+     * Identifies enemy piece located on index.
+     * @param index Index of piece.
+     * @returns Char corresponding to piece's identifier in algebraic chess notation.
+     */
+    PiecePair* identifyEnemyPiece(int index, Turn color);
 
     /**
      * Identifies which piece is making a move.
