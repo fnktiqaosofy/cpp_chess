@@ -86,7 +86,7 @@ void Client::processMoveCommand(std::smatch& move)
       return;
     }
     
-    int from = gameBoard.identifyMover(currPlayer, symbol, to);
+    int from = gameBoard.identifyMover(currPlayer, symbol, to, specifier);
     if (from == -1) {
       std::cout << "Illegal or ambiguous move." << '\n';
       return;

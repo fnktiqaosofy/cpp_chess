@@ -68,11 +68,11 @@ class Board
     /**
      * Identifies which piece is making a move.
      * @param color Color of player making the move.
-     * @param piece Piece identifier in algebraic chess notation.
+     * @param symbol Piece identifier in algebraic chess notation.
      * @param to Index of square being moved to.
      * @returns Index of the move's origin.
      */
-    int identifyMover(Turn color, char piece, int to);
+    int identifyMover(Turn color, char symbol, int to, std::string specifier);
 
     /**
      * Returns all pseudolegal moves possible for a player of a given color.

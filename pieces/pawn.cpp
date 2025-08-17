@@ -48,11 +48,11 @@ std::vector<std::pair<int,int>> Pawn::pseudoLegalMoves(uint64_t ownPieces, uint6
 
     for (auto [dr, df] : attackDirection)
     {
-      int curr_rank = fromRank + dr;
-      int curr_file = fromFile + df;
-      if (curr_rank >= 0 && curr_rank < 8 && curr_file >= 0 && curr_file < 8)
+      int currRank = fromRank + dr;
+      int currFile = fromFile + df;
+      if (currRank >= 0 && currRank < 8 && currFile >= 0 && currFile < 8)
       {
-        int to = curr_rank * 8 + curr_file;
+        int to = currRank * 8 + currFile;
         if ((opponentPieces >> to) & 1ULL)
         {
           moves.emplace_back(from, to);
@@ -66,7 +66,8 @@ std::vector<std::pair<int,int>> Pawn::pseudoLegalMoves(uint64_t ownPieces, uint6
     moves.emplace_back(from, to);
 
     to = from + (direction*16);
-    if (((from / 8) == startRank) && !(((ownPieces | opponentPieces) >> to) & 1ULL))
+    if (((from / 8) == startRank) && !(((ownPieces | opponentPieces) >> to) & 1ULL) &&
+      !(((ownPieces | opponentPieces) >> (from + 8)) & 1ULL))
     {
       moves.emplace_back(from, to);
     }

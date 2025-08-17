@@ -222,43 +222,52 @@ void Board::promotion(int to, char symbol)
   }
 }
 
-int Board::identifyMover(Turn color, char piece, int to)
+int Board::identifyMover(Turn color, char symbol, int to, std::string specifier)
 {
+  if (symbol == 'K') return findKing(color);
   std::vector<std::pair<int,int>> moves;
-  switch (piece)
+  PiecePair::PieceType piece = BoardUtils::charToPieceType(symbol);
+  PiecePair::Color colorP = (toMove == Turn::WHITE) ? PiecePair::WHITE : PiecePair::BLACK;
+  
+  if (color == Turn::WHITE)
   {
-    case 'P':
-      moves = (color == Turn::WHITE) ? whitePawns.pseudoLegalMoves(whitePieces, blackPieces) : blackPawns.pseudoLegalMoves(blackPieces, whitePieces);
-      break;
-    case 'R':
-      moves = (color == Turn::WHITE) ? whiteRooks.pseudoLegalMoves(whitePieces, blackPieces) : blackRooks.pseudoLegalMoves(blackPieces, whitePieces);
-      break;
-    case 'N':
-      moves = (color == Turn::WHITE) ? whiteKnights.pseudoLegalMoves(whitePieces, blackPieces) : blackKnights.pseudoLegalMoves(blackPieces, whitePieces);
-      break;
-    case 'B':
-      moves = (color == Turn::WHITE) ? whiteBishops.pseudoLegalMoves(whitePieces, blackPieces) : blackBishops.pseudoLegalMoves(blackPieces, whitePieces);
-      break;
-    case 'Q':
-      moves = (color == Turn::WHITE) ? whiteQueen.pseudoLegalMoves(whitePieces, blackPieces) : blackQueen.pseudoLegalMoves(blackPieces, whitePieces);
-      break;
-    case 'K':
-      return findKing(color);
+    moves = pieceTable[colorP][piece]->pseudoLegalMoves(whitePieces, blackPieces);
+  }
+  else
+  {
+    moves = pieceTable[colorP][piece]->pseudoLegalMoves(blackPieces, whitePieces);
   }
 
   int matchCount = 0;
   int ind = -1;
+  uint64_t squareFilter;
+  bool spec = !specifier.empty();
+
+  if (spec)
+  {
+    if (specifier.length() == 2)
+    {
+      return BoardUtils::coordToIndex(specifier);
+    }
+    if (std::isalpha(specifier[0])) {squareFilter = BoardUtils::squaresByFile[specifier[0] - 'a'];}
+    else {squareFilter = BoardUtils::squaresByRank[specifier[0] - '1'];}
+
+  }
+  else
+  {
+    squareFilter = UINT64_MAX;
+  }
 
   for (const auto& [fromSq, toSq] : moves)
   {
-      if (toSq == to)
-      {
-          ++matchCount;
-          if (matchCount == 1)
-              ind = fromSq;
-          else
-              return -1; // multiple matches
-      }
+    if (toSq == to && (squareFilter & (1ULL << fromSq)))
+    {
+        ++matchCount;
+        if (matchCount == 1)
+            ind = fromSq;
+        else
+            return -1; // multiple matches
+    }
   }
   return (matchCount == 1) ? ind : -1;
 }

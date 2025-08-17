@@ -7,6 +7,7 @@
 #include <vector>
 #include <array>
 #include <algorithm>
+#include <map>
 #include "../pieces/piece_pair.h"
 
 namespace BoardUtils 
@@ -17,6 +18,33 @@ namespace BoardUtils
   inline constexpr const std::array<std::string_view, 11> drawnPieceSetups = {
       "WK-BK", "WKB0-BK", "WKB1-BK", "WK-BKB0", "WK-BKB1", "WKN-BK", 
       "WK-BKN", "WKB0-BKB0", "WKB1-BKB1", "WKNN-BK", "WK-BKNN"};
+
+  /**
+   * Precomputed values used for disambiguation of moves.
+   */
+  inline constexpr std::array<uint64_t, 8> squaresByRank = [] {
+      std::array<uint64_t, 8> arr{};
+      for (int r = 0; r < 8; ++r) {
+          uint64_t mask = 0ULL;
+          for (int f = 0; f < 8; ++f) {
+              mask |= (1ULL << (r * 8 + f));
+          }
+          arr[r] = mask;
+      }
+      return arr;
+  }();
+
+  inline constexpr std::array<uint64_t, 8> squaresByFile = [] {
+      std::array<uint64_t, 8> arr{};
+      for (int f = 0; f < 8; ++f) {
+          uint64_t mask = 0ULL;
+          for (int r = 0; r < 8; ++r) {
+              mask |= (1ULL << (r * 8 + f));
+          }
+          arr[f] = mask;
+      }
+      return arr;
+  }();
 
   /**
    * Build string representation of remaining pieces, to be used in checking for insufficient material draws.
@@ -52,6 +80,6 @@ namespace BoardUtils
   * @returns Corresponding PieceType enum value.
   */
   PiecePair::PieceType charToPieceType(char symbol);
-}
+};
 
 #endif
