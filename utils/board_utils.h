@@ -7,13 +7,14 @@
 #include <vector>
 #include <array>
 #include <algorithm>
+#include "../pieces/piece_pair.h"
 
 namespace BoardUtils 
 {
   /**
    * Array of piece combinations guaranteed to be drawn. Combinations are given in a string representation.
    */
-  constexpr const std::array<std::string_view, 11> drawnPieceSetups = {
+  inline constexpr const std::array<std::string_view, 11> drawnPieceSetups = {
       "WK-BK", "WKB0-BK", "WKB1-BK", "WK-BKB0", "WK-BKB1", "WKN-BK", 
       "WK-BKN", "WKB0-BKB0", "WKB1-BKB1", "WKNN-BK", "WK-BKNN"};
 
@@ -43,8 +44,14 @@ namespace BoardUtils
   * @param input Occupation bitboard belonging to a color + piece combination.
   * @returns Vector of occupied indices.
   */ 
-  std::vector<int> findPieces(uint64_t input);
+  //std::vector<int> findPieces(uint64_t input);
 
+  /**
+  * Maps algebraic notation symbol to PieceType enum.
+  * @param symbol Algebraic notation symbol for a piece.
+  * @returns Corresponding PieceType enum value.
+  */
+  PiecePair::PieceType charToPieceType(char symbol);
 }
 
 #endif

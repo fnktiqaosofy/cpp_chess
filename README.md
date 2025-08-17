@@ -1,25 +1,9 @@
 # C++ Chess
-Chess implementation in C++, done entirely with bitboard representation.
+Chess implementation in C++, with bitboard representation.
 
-## TODO: Main implementations:
-✔️ All pieces implemented
-
-✔️ Board class
-
-✔️ Input handler
-
-❌ FTXUI
-
-### Features implemented:
-✔️ Checks
-
-✔️ Checkmates
-
-✔️ Promotions
+### Todo:
 
 ❌ En Passant
-
-✔️ Castling
 
 ❌ Stalemate detection
 
@@ -27,8 +11,8 @@ Chess implementation in C++, done entirely with bitboard representation.
 
 ❌ Fifty-move rule
 
-✔️ Insufficient material detection
-
 ❌ Switch regex library (std::regex is slow)
+
+❌ FTXUI
 
 ❌❌❌ Magic bitboards

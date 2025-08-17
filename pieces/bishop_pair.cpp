@@ -1,7 +1,7 @@
 #include "bishop_pair.h"
 
 // Initialize bitboard_ based on color.
-BishopPair::BishopPair(Color color) : PiecePair(color)
+BishopPair::BishopPair(Color color) : PiecePair(color, BISHOP)
 {
   if (color == WHITE)
   {
@@ -23,7 +23,7 @@ std::vector<std::pair<int,int>> BishopPair::pseudoLegalMoves(uint64_t ownPieces,
 {
   constexpr const std::array<std::pair<int,int>, 4> directions = {{{1,1}, {1,-1}, {-1,1}, {-1,-1}}};
   std::vector<std::pair<int,int>> moves;
-  std::vector<int> bishopIndices = BoardUtils::findPieces(bitboard_);
+  std::vector<int> bishopIndices = findPieces(bitboard_);
 
   for (int from : bishopIndices)
   {

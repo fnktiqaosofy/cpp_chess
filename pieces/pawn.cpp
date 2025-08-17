@@ -1,7 +1,7 @@
 #include "pawn.h"
 
 // Initialize bitboard_ based on color.
-Pawn::Pawn(Color color) : PiecePair(color)
+Pawn::Pawn(Color color) : PiecePair(color, PAWN)
 {
   if (color == WHITE)
   {
@@ -39,7 +39,7 @@ std::vector<std::pair<int,int>> Pawn::pseudoLegalMoves(uint64_t ownPieces, uint6
   }
 
   std::vector<std::pair<int,int>> moves;
-  std::vector<int> pawnIndices = BoardUtils::findPieces(bitboard_);
+  std::vector<int> pawnIndices = findPieces(bitboard_);
 
   for (int from : pawnIndices)
   {

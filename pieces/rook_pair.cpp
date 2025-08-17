@@ -1,7 +1,7 @@
 #include "rook_pair.h"
 
 // Initialize bitboard_ based on color.
-RookPair::RookPair(Color color) : PiecePair(color)
+RookPair::RookPair(Color color) : PiecePair(color, ROOK)
 {
   if (color == WHITE)
   {
@@ -23,7 +23,7 @@ std::vector<std::pair<int,int>> RookPair::pseudoLegalMoves(uint64_t ownPieces, u
 {
   constexpr const std::array<std::pair<int,int>, 4> directions = {{{1,0}, {-1,0}, {0,1}, {0,-1}}};
   std::vector<std::pair<int,int>> moves;
-  std::vector<int> rookIndices = BoardUtils::findPieces(bitboard_);
+  std::vector<int> rookIndices = findPieces(bitboard_);
 
   for (int from : rookIndices)
   {

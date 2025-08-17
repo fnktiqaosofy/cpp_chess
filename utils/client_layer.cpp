@@ -12,7 +12,7 @@ void Client::runProgram()
     std::cout << '\n';
     if (gameBoard.checkMate())
     {
-      std::string winner = (gameBoard.toMove == 0) ? "Black" : "White";
+      std::string winner = (gameBoard.getToMove() == Board::Turn::WHITE) ? "Black" : "White";
       std::cout << "Checkmate! " << winner << " has won." << '\n';
       break;
     }
@@ -55,17 +55,18 @@ void Client::printBoard()
         std::cout << '\n';
     }
 }
- // char symbol, int to, 
+
 void Client::processMoveCommand(std::smatch& move)
 {
+  Board::Turn currPlayer = gameBoard.getToMove();
   std::string castle = move[7].str();
   if (!castle.empty())
   {
     int check;
-    check = gameBoard.castleCommand(castle, gameBoard.toMove);
+    check = gameBoard.castleCommand(castle, currPlayer);
     if (check == -1)
     {
-      std::cout << "Cannot castle." << '\n';
+      std::cout << "Cannot castle as one (or more) involved squares are threatened." << '\n';
       return;
     }
     gameBoard.switchMover();
@@ -85,15 +86,15 @@ void Client::processMoveCommand(std::smatch& move)
       return;
     }
     
-    int from = gameBoard.identifyMover(gameBoard.toMove, symbol, to);
+    int from = gameBoard.identifyMover(currPlayer, symbol, to);
     if (from == -1) {
       std::cout << "Illegal or ambiguous move." << '\n';
       return;
     }
 
-    if (gameBoard.checkMoveLegality(gameBoard.toMove, from, to))
+    if (gameBoard.checkMoveLegality(currPlayer, from, to))
     {
-      gameBoard.moveCommand(symbol, from, to, gameBoard.toMove);
+      gameBoard.moveCommand(symbol, from, to, currPlayer);
       if ((symbol == 'P') && (((to / 8) == 7) || ((to / 8) == 0)))
       {
         gameBoard.promotion(to, promo[0]);

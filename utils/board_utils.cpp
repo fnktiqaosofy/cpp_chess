@@ -4,6 +4,7 @@
 
 #include "board_utils.h"
 
+
 namespace BoardUtils
 {
 
@@ -57,16 +58,8 @@ namespace BoardUtils
     return file + (8 * rank);
   }
 
-  std::vector<int> findPieces(uint64_t input)
-  {
-      std::vector<int> indices;
-      for (int i = 0; i < 64; ++i)
-      {
-          if ((input >> i) & 1ULL)
-              indices.push_back(i);
-      }
-      return indices;
-  }
+
+
 
   std::optional<std::string> indexToCoord(int index)
   {
@@ -74,5 +67,18 @@ namespace BoardUtils
     int rank = (index / 8) + 1;
     char file = (index % 8) + '`'; // Offset to get correct file char.
     return file + std::to_string(rank);
+  }
+
+  PiecePair::PieceType charToPieceType(char symbol)
+  {
+    switch(symbol){
+      case 'P': return PiecePair::PAWN;
+      case 'R': return PiecePair::ROOK;
+      case 'N': return PiecePair::KNIGHT;
+      case 'B': return PiecePair::BISHOP;
+      case 'Q': return PiecePair::QUEEN;
+      case 'K': return PiecePair::KING;
+      default: __builtin_unreachable();
+    }
   }
 }

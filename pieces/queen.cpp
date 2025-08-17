@@ -1,7 +1,7 @@
 #include "queen.h"
 
 // Initialize bitboard_ based on color.
-Queen::Queen(Color color) : PiecePair(color)
+Queen::Queen(Color color) : PiecePair(color, QUEEN)
 {
   if (color == WHITE)
   {
@@ -23,7 +23,7 @@ std::vector<std::pair<int,int>> Queen::pseudoLegalMoves(uint64_t ownPieces, uint
 {
   constexpr const std::array<std::pair<int,int>, 8> directions = {{{1,1}, {1,-1}, {-1,1}, {-1,-1}, {1,0}, {-1,0}, {0,1}, {0,-1}}};
   std::vector<std::pair<int,int>> moves;
-  std::vector<int> queenIndices = BoardUtils::findPieces(bitboard_);
+  std::vector<int> queenIndices = findPieces(bitboard_);
 
   for (int from : queenIndices)
   {

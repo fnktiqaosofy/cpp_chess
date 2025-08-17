@@ -1,7 +1,7 @@
 #include "king.h"
 
 // Initialize bitboard_ based on color.
-King::King(Color color) : PiecePair(color)
+King::King(Color color) : PiecePair(color, KNIGHT)
 {
   if (color == WHITE)
   {
@@ -23,7 +23,7 @@ std::vector<std::pair<int,int>> King::pseudoLegalMoves(uint64_t ownPieces, uint6
 {
   constexpr const std::array<std::pair<int,int>, 8> directions = {{{1,1}, {1,-1}, {-1,1}, {-1,-1}, {1,0}, {-1,0}, {0,1}, {0,-1}}};
   std::vector<std::pair<int,int>> moves;
-  std::vector<int> kingIndices = BoardUtils::findPieces(bitboard_);
+  std::vector<int> kingIndices = findPieces(bitboard_);
 
   for (int from : kingIndices)
   {

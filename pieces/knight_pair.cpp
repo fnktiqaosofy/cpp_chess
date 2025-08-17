@@ -1,7 +1,7 @@
 #include "knight_pair.h"
 
 // Initialize bitboard_ based on color.
-KnightPair::KnightPair(Color color) : PiecePair(color)
+KnightPair::KnightPair(Color color) : PiecePair(color, KNIGHT)
 {
   if (color == WHITE)
   {
@@ -22,7 +22,7 @@ char KnightPair::getSymbol() const
 std::vector<std::pair<int,int>> KnightPair::pseudoLegalMoves(uint64_t ownPieces, uint64_t opponentPieces) const
 {
   std::vector<std::pair<int,int>> moves;
-  std::vector<int> knightIndices = BoardUtils::findPieces(bitboard_);
+  std::vector<int> knightIndices = findPieces(bitboard_);
   for (int from : knightIndices)
   {
     for (int delta : move_deltas)
