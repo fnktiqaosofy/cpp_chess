@@ -3,11 +3,7 @@ Chess implementation in C++, with bitboard representation.
 
 ### Todo:
 
-❌ Stalemate detection
-
 ❌ Draw by repetition
-
-❌ Fifty-move rule
 
 ❌ Switch regex library (std::regex is slow)
 
