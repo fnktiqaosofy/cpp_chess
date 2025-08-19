@@ -19,6 +19,8 @@ class Client
 
     std::smatch getMove(std::smatch& match, std::string& move);
 
+    void resetGame();
+
   private:
 
     Board gameBoard;

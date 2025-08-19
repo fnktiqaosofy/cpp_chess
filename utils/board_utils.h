@@ -1,6 +1,20 @@
 #ifndef BOARD_UTILS_H
 #define BOARD_UTILS_H
 
+#if defined(_MSC_VER)
+#include <intrin.h>
+
+inline int __builtin_popcountll(uint64_t x) {
+    return __popcnt64(x);
+}
+
+inline int __builtin_ctzll(uint64_t x) {
+    unsigned long index;
+    _BitScanForward64(&index, x);
+    return static_cast<int>(index);
+}
+#endif
+
 #include <string>
 #include <optional>
 #include <cstdint>

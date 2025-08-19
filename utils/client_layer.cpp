@@ -10,15 +10,33 @@ void Client::runProgram()
     std::cout << '\n';
     printBoard();
     std::cout << '\n';
-    if (gameBoard.checkMate())
+    int mateState = gameBoard.checkMate();
+    if (mateState == 1)
     {
       std::string winner = (gameBoard.getToMove() == Board::Turn::WHITE) ? "Black" : "White";
       std::cout << "Checkmate! " << winner << " has won." << '\n';
       break;
     }
+    else if (mateState == -1)
+    {
+      std::cout << "Stalemate! The game is a draw." << '\n';
+      break;
+    }
     if (gameBoard.insufficientMaterial())
     {
       std::cout << "Game is drawn due to insufficient material." << '\n';
+      break;
+    }
+    if (gameBoard.fiftyMoveDraw())
+    {
+      std::string drawConfirm;
+      std::cout << "You may claim a draw, as per the fifty-move rule. Would you like to? [Y/N]" << '\n';
+      std::getline(std::cin, drawConfirm);
+      if (drawConfirm == "Y")
+      {
+        std::cout << "The game is drawn, as per the fifty-move rule." << '\n';
+        break;
+      }
     }
     std::smatch match;
     std::string move;

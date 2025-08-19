@@ -109,10 +109,10 @@ class Board
     bool isCastlingThreatened(char side);
 
     /**
-     * Checks if board is in a checkmate state.
-     * @returns Bool signifying whether no legal moves can be made that bring the king out of check.
+     * Checks if board is in a checkmate state or stalemated.
+     * @returns Integer of value 1 if king is checkmated, 0 if not, -1 if stalemated.
      */
-    bool checkMate();
+    int checkMate();
 
     /**
      * Checks if material is insufficient for game not to end in a draw.
@@ -127,6 +127,8 @@ class Board
     Turn getToMove();
 
     uint8_t getEnpassant();
+
+    bool fiftyMoveDraw();
 
   private:
   
@@ -156,6 +158,8 @@ class Board
     PiecePair* pieceTable[2][6];
 
     std::array<uint8_t, 2> enPassant{};
+
+    int fiftyMoveTracker{};
 };
 
 #endif

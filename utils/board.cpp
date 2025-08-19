@@ -118,16 +118,20 @@ void Board::moveCommand(char symbol, int from, int to, Turn color)
   if(from == 63) {blackCastledK = true;}
   if(from == 56) {blackCastledQ = true;}
   enPassant[!(int)color] = 0;
+  fiftyMoveTracker++;
 
   PiecePair::PieceType piece = BoardUtils::charToPieceType(symbol);
   PiecePair::Color colorP = (toMove == Turn::WHITE) ? PiecePair::WHITE : PiecePair::BLACK;
   
   pieceTable[colorP][piece]->applyMove(from, to);
-  if(piece == PiecePair::PAWN && (std::abs(to - from) == 16))
+  if(piece == PiecePair::PAWN)
   {
-    enPassant[(int)color] = (uint8_t(1) << (from % 8));
+    fiftyMoveTracker = 0;
+    if ((std::abs(to - from) == 16))
+    {
+      enPassant[(int)color] = (uint8_t(1) << (from % 8));
+    }
   }
-
   
   uint64_t& attackedPieces = (color == Turn::WHITE) ? blackPieces : whitePieces;
   if (piece == PiecePair::PAWN)
@@ -153,6 +157,7 @@ void Board::moveCommand(char symbol, int from, int to, Turn color)
     const auto attackedPiece = identifyEnemyPiece(to, color);
     attackedPiece->clearSquare(to);
     attackedPieces &= ~(1ULL << to);
+    fiftyMoveTracker = 0;
   }
 
   updateBoardAggregates();
@@ -460,14 +465,18 @@ bool Board::isCastlingThreatened(char side)
   return false;
 }
 
-bool Board::checkMate()
+int Board::checkMate()
 {
   auto allmoves = getAllPseudoLegalMoves(Board::toMove);
   for (const auto& [fromSq, toSq] : allmoves)
   {
-      if (checkMoveLegality(toMove, fromSq, toSq)) {return false;}
+      if (checkMoveLegality(toMove, fromSq, toSq)) {return 0;}
   }
-  return true;
+  if(isSquareThreatened(findKing(Board::toMove)))
+  {
+    return 1;
+  }
+  return -1;
 }
 
 bool Board::insufficientMaterial()
@@ -495,4 +504,9 @@ Board::Turn Board::getToMove()
 uint8_t Board::getEnpassant()
 {
   return enPassant[!(int)getToMove()];
+}
+
+bool Board::fiftyMoveDraw()
+{
+  return (fiftyMoveTracker >= 50);
 }
